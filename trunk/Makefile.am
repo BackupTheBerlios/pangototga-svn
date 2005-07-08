@@ -3,9 +3,8 @@
 SUBDIRS = src
 
 EXTRA_DIST = \
-	autogen.sh \
-	font2pcx.glade \
-	font2pcx.gladep
+	pangototga.glade \
+	pangototga.gladep
 
 install-data-local:
 	@$(NORMAL_INSTALL)
