@@ -44,6 +44,10 @@ get_real_pixel_size(GtkWidget *widget, PangoLayout *layout, int *l, int *t, int 
 {
 	int w, h;
 	pango_layout_get_pixel_size(layout, &w, &h);
+	if (!w)
+	    w += 1;
+	if (!h)
+	    h += 1;
 	w *= 3;
 	h *= 3;
 	GdkPixmap *pixmap = gdk_pixmap_new(widget->window, w, h, -1);
@@ -182,6 +186,8 @@ on_button5_clicked                     (GtkButton       *button,
 	if (shift_down)
 		printf("Shifting all characters down by %d.\n", shift_down);
 
+	printf("TGA: %d x %d\n", tga_w, tga_h);
+
 	GdkPixmap *pixmap = gdk_pixmap_new(imagewidget->window, tga_w, tga_h, -1);
 
 	GdkGC *gc = gdk_gc_new(pixmap);
@@ -232,7 +238,7 @@ on_button5_clicked                     (GtkButton       *button,
 
 		gdk_gc_set_rgb_fg_color(gc, &color_font);
 
-		gdk_draw_layout(pixmap, gc, tga_x - l, tga_y + shift_down + t, layout);
+		gdk_draw_layout(pixmap, gc, tga_x - l, tga_y - shift_down + t, layout);
 
 		tga_x += gridw + 1;
 		if (tga_x >= tga_w)
