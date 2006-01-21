@@ -129,6 +129,7 @@ on_button5_clicked                     (GtkButton       *button,
 	int last_char = strtol(gtk_entry_get_text(GTK_ENTRY(lookup_widget (widget, "entry2"))), NULL, 0);
 	int first_col = strtol(gtk_entry_get_text(GTK_ENTRY(lookup_widget (widget, "entry3"))), NULL, 0);
 	int last_col = strtol(gtk_entry_get_text(GTK_ENTRY(lookup_widget (widget, "entry4"))), NULL, 0);
+        int truecolor = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget (widget, "checkbutton1")));
 
 	fontname = gtk_font_selection_get_font_name (GTK_FONT_SELECTION (fontsel));
 
@@ -258,25 +259,30 @@ on_button5_clicked                     (GtkButton       *button,
 	int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
 
 	FILE *file = fopen(filename, "wb");
-	guchar tga_header[] = {0, 1, 1, 0, 0, 0, 1, 24,
-		0, 0, 0, 0, tga_w & 255, tga_w >> 8, tga_h & 255, tga_h >> 8, 8, 0};
+	guchar tga_header[] = {0, truecolor ? 0 : 1,
+		truecolor ? 2 : 1, 0, 0, 0, truecolor ? 0 : 1,
+		truecolor ? 0 : 24,
+		0, 0, 0, 0, tga_w & 255, tga_w >> 8, tga_h & 255, tga_h >> 8,
+		truecolor ? 32 : 8, truecolor ?  8 : 0};
 	fwrite(tga_header, sizeof(tga_header), 1, file);
 
-	int c;
-	for (c = 0; c < 256; c++)
+	if (!truecolor)
 	{
-		int r = 0, g = 0, b = 0;
-		if (c == 0) {r = 255; g = 255; b = 0;}
-		else if (c == 255) {r = 255; g = 0; b = 255;}
-		else if (c >= first_col && c <= last_col)
+		int c;
+		for (c = 0; c < 256; c++)
 		{
-			r = g = b = 255 - (c - first_col) * 255 / (last_col - first_col);
+			int r = 0, g = 0, b = 0;
+			if (c == 0) {r = 255; g = 255; b = 0;}
+			else if (c == 255) {r = 255; g = 0; b = 255;}
+			else if (c >= first_col && c <= last_col)
+			{
+				r = g = b = 255 - (c - first_col) * 255 / (last_col - first_col);
+			}
+			fputc(b, file);
+			fputc(g, file);
+			fputc(r, file);
 		}
-		fputc(b, file);
-		fputc(g, file);
-		fputc(r, file);
 	}
-	
 	int x, y;
 	for (y = tga_h - 1; y >= 0; y--)
 	{
@@ -286,13 +292,41 @@ on_button5_clicked                     (GtkButton       *button,
 			guchar green = pixels[rowstride * y + x * 3 + 1];
 			guchar blue = pixels[rowstride * y + x * 3 + 2];
 			if (red == 255 && green == 0 && blue == 255)
-				fputc(255, file);
+			{
+				if (truecolor)
+				{
+					fputc(255, file);
+					fputc(255, file);
+					fputc(255, file);
+					fputc(255, file);
+				}
+				else
+					fputc(255, file);
+			}
 			else if (red == 255 && green == 255 && blue == 255)
-				fputc(0, file);
+			{
+				if (truecolor)
+				{
+					fputc(0, file);
+					fputc(0, file);
+					fputc(0, file);
+					fputc(0, file);
+				}
+				else
+					fputc(0, file);
+			}
 			else
 			{
-				c = (red + green + blue) / 3;
-				fputc(last_col - c * (last_col - first_col) / 255, file);
+				int c = (red + green + blue) / 3;
+				if (truecolor)
+				{
+					fputc(0, file);
+					fputc(0, file);
+					fputc(0, file);
+					fputc(255 - c, file);
+				}
+				else
+					fputc(last_col - c * (last_col - first_col) / 255, file);
 			}
 		}
 	}

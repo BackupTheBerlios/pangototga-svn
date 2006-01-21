@@ -42,6 +42,11 @@ create_window1 (void)
   GtkWidget *vbox5;
   GtkWidget *label5;
   GtkWidget *entry4;
+  GtkWidget *checkbutton1;
+  GtkWidget *alignment1;
+  GtkWidget *hbox8;
+  GtkWidget *image2;
+  GtkWidget *label6;
   GtkWidget *vbox3;
   GtkWidget *hbox4;
   GtkWidget *label2;
@@ -116,6 +121,26 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (vbox5), entry4, FALSE, FALSE, 0);
   gtk_entry_set_text (GTK_ENTRY (entry4), _("254"));
   gtk_entry_set_width_chars (GTK_ENTRY (entry4), 3);
+
+  checkbutton1 = gtk_check_button_new ();
+  gtk_widget_show (checkbutton1);
+  gtk_box_pack_start (GTK_BOX (vbox2), checkbutton1, FALSE, FALSE, 0);
+
+  alignment1 = gtk_alignment_new (0.5, 0.5, 0, 0);
+  gtk_widget_show (alignment1);
+  gtk_container_add (GTK_CONTAINER (checkbutton1), alignment1);
+
+  hbox8 = gtk_hbox_new (FALSE, 2);
+  gtk_widget_show (hbox8);
+  gtk_container_add (GTK_CONTAINER (alignment1), hbox8);
+
+  image2 = gtk_image_new_from_stock ("gtk-about", GTK_ICON_SIZE_BUTTON);
+  gtk_widget_show (image2);
+  gtk_box_pack_start (GTK_BOX (hbox8), image2, FALSE, FALSE, 0);
+
+  label6 = gtk_label_new_with_mnemonic (_("True Color"));
+  gtk_widget_show (label6);
+  gtk_box_pack_start (GTK_BOX (hbox8), label6, FALSE, FALSE, 0);
 
   vbox3 = gtk_vbox_new (FALSE, 8);
   gtk_widget_show (vbox3);
@@ -200,6 +225,11 @@ create_window1 (void)
   GLADE_HOOKUP_OBJECT (window1, vbox5, "vbox5");
   GLADE_HOOKUP_OBJECT (window1, label5, "label5");
   GLADE_HOOKUP_OBJECT (window1, entry4, "entry4");
+  GLADE_HOOKUP_OBJECT (window1, checkbutton1, "checkbutton1");
+  GLADE_HOOKUP_OBJECT (window1, alignment1, "alignment1");
+  GLADE_HOOKUP_OBJECT (window1, hbox8, "hbox8");
+  GLADE_HOOKUP_OBJECT (window1, image2, "image2");
+  GLADE_HOOKUP_OBJECT (window1, label6, "label6");
   GLADE_HOOKUP_OBJECT (window1, vbox3, "vbox3");
   GLADE_HOOKUP_OBJECT (window1, hbox4, "hbox4");
   GLADE_HOOKUP_OBJECT (window1, label2, "label2");
